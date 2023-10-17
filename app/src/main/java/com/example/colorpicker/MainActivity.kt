@@ -1,10 +1,12 @@
 package com.example.colorpicker
 
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.example.colorpicker.databinding.ActivityMainBinding
+import yuku.ambilwarna.AmbilWarnaDialog
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,6 +18,12 @@ class MainActivity : AppCompatActivity() {
     private var currentVisibleView: String = RGB_VIEW
 
     private var binding: ActivityMainBinding? = null
+
+    private var mDefaultColor = 0
+    private var red = 0
+    private var green = 0
+    private var blue = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,20 +42,40 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-    }
-
-    private fun setRGBColor(){
-        val redColor = binding?.redInput?.text.toString().toInt(16)
-        val greenColor = binding?.greenInput?.text.toString().toInt(16)
-        val blueColor = binding?.blueInput?.text.toString().toInt(16)
-
+        binding?.pickColorButton?.setOnClickListener{
+            openColorPickerDialogue()
+        }
 
         binding?.backgroundBtn?.setOnClickListener {
-            setRGBColor()
-            val intent = Intent(this, BackgroundActivity::class.java)
-            startActivity(intent)
+
+            red = binding?.redInput?.text.toString().toInt(16)
+            green = binding?.greenInput?.text.toString().toInt(16)
+            blue = binding?.blueInput?.text.toString().toInt(16)
+
+            val color = Color.rgb(red, green, blue)
+            if (binding?.pickColorButton?.visibility==View.GONE) {
+                if (binding!!.redInput.text.isNotEmpty()){
+                    red=binding!!.redInput.text.toString().toInt()
+                }
+                if (binding!!.blueInput.text.isNotEmpty()){
+                    blue=binding!!.blueInput.text.toString().toInt()
+                }
+                if (binding!!.greenInput.text.isNotEmpty()){
+                    green=binding!!.greenInput.text.toString().toInt()
+                }
+
+                val intent=Intent(this,BackgroundActivity::class.java)
+                startActivity(intent)
+
+            }else{
+
+                val intent=Intent(this,BackgroundActivity::class.java)
+                intent.putExtra("color",mDefaultColor)
+                startActivity(intent)
+
+            }
         }
+
 
     }
 
@@ -62,4 +90,21 @@ class MainActivity : AppCompatActivity() {
         binding?.rgbView?.visibility = View.GONE
         binding?.colorPickerView?.visibility = View.VISIBLE
     }
+
+    fun openColorPickerDialogue() {
+
+        val colorPickerDialogue = AmbilWarnaDialog(this, mDefaultColor,
+            object : AmbilWarnaDialog.OnAmbilWarnaListener {
+                override fun onCancel(dialog: AmbilWarnaDialog?) {
+                }
+
+                override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
+                    mDefaultColor = color
+
+                    binding?.previewSelectedColor?.setBackgroundColor(mDefaultColor)
+                }
+            })
+        colorPickerDialogue.show()
+    }
+
 }
