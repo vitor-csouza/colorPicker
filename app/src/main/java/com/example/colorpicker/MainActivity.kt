@@ -20,15 +20,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_main)
+        setContentView(binding?.root)
 
 
-        makeVisibleRGB()
-        binding?.rgColors?.setOnCheckedChangeListener { _, checkedId: Int ->
-            if(checkedId==R.id.rgbBtn){
-                makeVisibleRGB()
+        makeVisibleRGBView()
+        binding?.rgViews?.setOnCheckedChangeListener { _, checkedId: Int ->
+            print(checkedId)
+            print(R.id.rbRGB)
+            if (checkedId == R.id.rbRGB) {
+                makeVisibleRGBView()
             } else {
-                makeVisibleColorPicker()
+                makeVisibleColorPickerView()
             }
         }
 
@@ -36,29 +38,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRGBColor(){
-        val redColor = binding?.redInput?.text.toString().toInt()
-        val greenColor = binding?.greenInput?.text.toString().toInt()
-        val blueColor = binding?.blueInput?.text.toString().toInt()
+        val redColor = binding?.redInput?.text.toString().toInt(16)
+        val greenColor = binding?.greenInput?.text.toString().toInt(16)
+        val blueColor = binding?.blueInput?.text.toString().toInt(16)
+
 
         binding?.backgroundBtn?.setOnClickListener {
+            setRGBColor()
             val intent = Intent(this, BackgroundActivity::class.java)
             startActivity(intent)
         }
 
     }
 
-    private fun makeVisibleColorPicker(){
-        currentVisibleView = COLOR_PICKER_VIEW
-        binding?.rgbView?.visibility = View.GONE
-        binding?.colorPickerView?.visibility = View.VISIBLE
-        binding?.redInput?.text!!.clear()
-        binding?.greenInput?.text!!.clear()
-        binding?.blueInput?.text!!.clear()
-    }
-
-    private fun makeVisibleRGB(){
+    private fun makeVisibleRGBView() {
         currentVisibleView = RGB_VIEW
         binding?.rgbView?.visibility = View.VISIBLE
         binding?.colorPickerView?.visibility = View.GONE
+    }
+
+    private fun makeVisibleColorPickerView() {
+        currentVisibleView = COLOR_PICKER_VIEW
+        binding?.rgbView?.visibility = View.GONE
+        binding?.colorPickerView?.visibility = View.VISIBLE
     }
 }
