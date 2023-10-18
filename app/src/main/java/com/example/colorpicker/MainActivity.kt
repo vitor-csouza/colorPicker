@@ -5,6 +5,10 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
+import androidx.core.graphics.toColor
 import com.example.colorpicker.databinding.ActivityMainBinding
 import yuku.ambilwarna.AmbilWarnaDialog
 
@@ -48,12 +52,8 @@ class MainActivity : AppCompatActivity() {
 
         binding?.backgroundBtn?.setOnClickListener {
 
-            red = binding?.redInput?.text.toString().toInt(16)
-            green = binding?.greenInput?.text.toString().toInt(16)
-            blue = binding?.blueInput?.text.toString().toInt(16)
 
-            val color = Color.rgb(red, green, blue)
-            if (binding?.pickColorButton?.visibility==View.GONE) {
+            if (binding?.colorPickerView?.visibility==View.GONE) {
                 if (binding!!.redInput.text.isNotEmpty()){
                     red=binding!!.redInput.text.toString().toInt()
                 }
@@ -64,16 +64,23 @@ class MainActivity : AppCompatActivity() {
                     green=binding!!.greenInput.text.toString().toInt()
                 }
 
-                val intent=Intent(this,BackgroundActivity::class.java)
-                startActivity(intent)
 
-            }else{
+                red = binding?.redInput?.text.toString().toInt()
+                green = binding?.greenInput?.text.toString().toInt()
+                blue = binding?.blueInput?.text.toString().toInt()
 
-                val intent=Intent(this,BackgroundActivity::class.java)
-                intent.putExtra("color",mDefaultColor)
-                startActivity(intent)
 
+                mDefaultColor = Color.rgb(red, green, blue)
+
+
+            } else {
+                mDefaultColor = Color.rgb(red, green, blue)
             }
+
+            val intent=Intent(this,BackgroundActivity::class.java)
+            intent.putExtra("color",mDefaultColor)
+            startActivity(intent)
+
         }
 
 
@@ -99,9 +106,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-                    mDefaultColor = color
+                    red = color.red
+                    green = color.green
+                    blue = color.blue
 
-                    binding?.previewSelectedColor?.setBackgroundColor(mDefaultColor)
+                    binding?.previewSelectedColor?.setBackgroundColor(color)
                 }
             })
         colorPickerDialogue.show()
